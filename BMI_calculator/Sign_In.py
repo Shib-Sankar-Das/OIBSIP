@@ -4,9 +4,13 @@ import os
 
 root=Tk()
 root.title("BMI Calculator")
-root.geometry('925x500+300+100')
+root.geometry('925x500+250+100')
 root.configure(bg="#fff")
 root.resizable(False, False)
+
+#icon
+image_icon=PhotoImage(file="BMI_calculator\Resources\icon.png")
+root.iconphoto(False,image_icon)
 
 def signin_success():
     root.withdraw()
@@ -21,7 +25,7 @@ def signin():
         print("Hi")
         signin_success()
 
-img = PhotoImage(file="Resources\logo2.png")
+img = PhotoImage(file="BMI_calculator\Resources\logo2.png")
 Label(root,  image=img, bg='white').place(x=60, y=10)
 
 frame=Frame(root, width = 350, height = 350, bg = "white")
@@ -51,22 +55,52 @@ Frame(frame,width=295,height=2,bg='black').place(x=25,y=107)
 
 ######------------------------------------------------
 
+is_password = False
+
 def on_enter_(e):
+    global is_showing
+    global is_password
     code.delete(0, 'end')
+    is_password=True
+    is_showing = False
     
 def on_leave_(e):
+    global is_showing
+    global is_password
     name=code.get()
     if name=='':
         code.insert(0, "Password")
-        
-code = Entry(frame,width=25,fg='black',border=0,bg="white",font=("Microsoft YaHei UI Light", 11))
+        is_showing=True
+        show_hide()
+    is_password=False
+    
+code = Entry(frame,width=25,fg='black',border=0,bg="white",font=("Microsoft YaHei UI Light", 11),show='')
 code.place(x=30,y=150)
 code.insert(0, "Password")
 code.bind('<FocusIn>', on_enter_)
 code.bind('<FocusOut>', on_leave_)
 
+def show_hide():
+    global is_showing
+    global is_password
+    if is_password :
+        if is_showing :
+            code.config(show='')
+            show_hide_btn.config(image=hide_p)
+        else:
+            code.config(show='*')
+            show_hide_btn.config(image=show_p)
+        is_showing = not is_showing
+    
+show_p=PhotoImage(file="BMI_calculator\Resources\show_small.png")
+hide_p=PhotoImage(file="BMI_calculator\Resources\hide_small.png")
+show_hide_btn=Button(frame,image=show_p,bg="white",border=0,command=show_hide)
+is_showing = True  
+show_hide_btn.place(x=280,y=150)
 
 Frame(frame,width=295,height=2,bg='black').place(x=25,y=177)
+
+
 
 ##############################################################
 
@@ -74,7 +108,12 @@ Button(frame, width=39, pady=7, text='Sign in',bg='#57a1f8',fg='white',border=0,
 lable=Label(frame,text="Don't have an account?",fg='black',bg='white',font=("Microsoft YaHei UI Light", 9))
 lable.place(x=75,y=270)
 
-sign_up=Button(frame, width=6, text='sign up', border=0, bg='white', cursor='hand2', fg='#57a1f8')
+def sign_up():
+    root.withdraw()
+    os.system("python BMI_calculator\Sign_Up.py")
+    root.destroy()
+
+sign_up=Button(frame, width=6, text='sign up', border=0, bg='white', cursor='hand2', fg='#57a1f8', command=sign_up)
 sign_up.place(x=215,y=270)
 
 root.mainloop()
