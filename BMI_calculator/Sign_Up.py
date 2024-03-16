@@ -82,6 +82,7 @@ gender_combobox.bind("<<ComboboxSelected>>", on_gender_change)
 ######------------------------------------------------
 
 cal=DateEntry(frame,selectmode='day',date_pattern="dd/mm/y",state="readonly")
+cal._set_text("Birth Date")
 cal.place(x=200,y=130)
 
 ######------------------------------------------------

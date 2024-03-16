@@ -5,6 +5,7 @@ from PIL import  ImageTk, Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from data import sales_year_data
+import os
 
 root=Tk()
 root.title("BMI Calculator")
@@ -80,7 +81,6 @@ def on_Year_change(event=None):
             # Bind the combobox change event
             month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
     else:
-        print("Hello")
         if month1_combobox is not None:
             month1_combobox.destroy()
             data_label.destroy()
@@ -91,13 +91,11 @@ def on_month1_change(event=None):
     selected_month = month1_combobox.get()
     print("Selected Month:", selected_month)
         
-        #on_Year_change()
 
-def on_All_change(event):
-    selected_year = year_combobox.get()
-    if  selected_year == "All Time":
-        print("fre")
-        
+def logout():
+    root.withdraw()
+    os.system("python BMI_calculator\Sign_In.py")
+    root.destroy()        
     
 
 year_options = ["All Time", "2023", "2024"]
@@ -107,7 +105,6 @@ year_combobox.set("Year")
 year_combobox.place(x=720,y=450)
 # Bind the combobox change event
 year_combobox.bind("<<ComboboxSelected>>", on_Year_change)
-year_combobox.bind("<<ComboboxModified>>", on_All_change)
 
 #bottom box
 Label(frame,width=66,height=22, bg="lightblue").place(x=20, y=190)
@@ -197,11 +194,15 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(
     color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
 
 fig4, ax4 = plt.subplots()
-ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()))
+ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()), label="BMI", marker="o", markerfacecolor="green")
 ax4.set_title("Sales by Year", fontsize=20)
 ax4.set_xlabel("Year", fontsize=10)
 ax4.tick_params(axis='both', which='major', labelsize=5)
 ax4.set_ylabel("Sales",fontsize=10)
+for year, sales in sales_year_data.items():
+    #ax4.text(year, sales, str(sales), ha='center', va='bottom', fontsize=10)
+    ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
+ax4.legend()
 #plt.show()
 
 canvas4 = FigureCanvasTkAgg(fig4, frame1)
@@ -213,7 +214,7 @@ canvas4.get_tk_widget().pack()
 
 table = ttk.Treeview(label_frame, columns = ('date', 'height', 'weight','bmi'), show = 'headings', height=5)
 table.heading('date', text = 'Date')
-table.heading('height', text = 'Hight')
+table.heading('height', text = 'Height')
 table.heading('weight', text = 'Weight')
 table.heading('bmi', text = 'BMI')
 table.pack(fill = 'x', expand = False)
@@ -223,5 +224,9 @@ table.column("height", width=120, anchor=tk.CENTER)
 table.column("weight", width=120, anchor=tk.CENTER)
 table.column("bmi", width=120, anchor=tk.CENTER)
 
+Button(root, width=10, pady=7, text='Log out',bg='#57a1f8',fg='white',border=0, command=logout).place(x=1100,y=20)
+
+label_name=Label(root, font="arial 20 bold", bg="white", fg="#000", justify='center', text="Name")
+label_name.place(x=20,y=20)
 
 root.mainloop()
