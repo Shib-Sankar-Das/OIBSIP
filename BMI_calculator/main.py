@@ -2,14 +2,15 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from PIL import  ImageTk, Image
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+from data import sales_year_data
 
 root=Tk()
 root.title("BMI Calculator")
 root.geometry("1200x650+75+25")
 root.resizable(False, False)
 root.configure(bg="white")
-
 
 
 
@@ -50,6 +51,63 @@ top_image.place(x=425,y=10)
 
 frame=Frame(root, width = 510, height = 550)
 frame.place(x=50,y=70)
+
+frame1=Frame(root, width = 650, height = 400, bg="red")
+frame1.place(x=560,y=50)
+
+label_frame = tk.LabelFrame(root, text="BMI Data",width=500, height=100)
+label_frame.place(x=650, y=490)
+
+data_label=Label(root, bg='white', text="BMI Data of ")
+data_label.place(x=650,y=450)
+
+month1_combobox = None 
+data_label = None
+
+def on_Year_change(event=None):
+    global month1_combobox
+    global data_label
+    
+    selected_year = year_combobox.get()
+    if selected_year == "2023" or selected_year == "2024":
+        if month1_combobox is None:
+            data_label = tk.Label(root, bg='white', text=", ")
+            data_label.place(x=870, y=450)
+            month1_options = ["All Months", 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+            month1_combobox = ttk.Combobox(root, values=month1_options, style='NoBorder.TCombobox', state="readonly")
+            month1_combobox.set("Months")
+            month1_combobox.place(x=880, y=450)
+            # Bind the combobox change event
+            month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
+    else:
+        print("Hello")
+        if month1_combobox is not None:
+            month1_combobox.destroy()
+            data_label.destroy()
+            month1_combobox = None
+            data_label=None
+
+def on_month1_change(event=None):
+    selected_month = month1_combobox.get()
+    print("Selected Month:", selected_month)
+        
+        #on_Year_change()
+
+def on_All_change(event):
+    selected_year = year_combobox.get()
+    if  selected_year == "All Time":
+        print("fre")
+        
+    
+
+year_options = ["All Time", "2023", "2024"]
+year_combobox = ttk.Combobox(root, values=year_options, style='NoBorder.TCombobox', state="readonly")
+year_combobox.set("Year")
+#year_combobox.pack(pady=10)
+year_combobox.place(x=720,y=450)
+# Bind the combobox change event
+year_combobox.bind("<<ComboboxSelected>>", on_Year_change)
+year_combobox.bind("<<ComboboxModified>>", on_All_change)
 
 #bottom box
 Label(frame,width=66,height=22, bg="lightblue").place(x=20, y=190)
@@ -135,8 +193,35 @@ label3=Label(frame, font="arial 10 bold", bg="lightblue", fg="#000", justify='ce
 label3.place(x=200,y=450)
 
 
+plt.rcParams["axes.prop_cycle"] = plt.cycler(
+    color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
 
+fig4, ax4 = plt.subplots()
+ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()))
+ax4.set_title("Sales by Year", fontsize=20)
+ax4.set_xlabel("Year", fontsize=10)
+ax4.tick_params(axis='both', which='major', labelsize=5)
+ax4.set_ylabel("Sales",fontsize=10)
+#plt.show()
 
+canvas4 = FigureCanvasTkAgg(fig4, frame1)
+canvas4.draw()
+#canvas4.get_tk_widget().pack(side="left", fill="none", expand=False)
+#canvas4.get_tk_widget().pack(side="left", fill="both", expand=True, padx=5, pady=5, width=300, height=200)
+canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
+canvas4.get_tk_widget().pack()
+
+table = ttk.Treeview(label_frame, columns = ('date', 'height', 'weight','bmi'), show = 'headings', height=5)
+table.heading('date', text = 'Date')
+table.heading('height', text = 'Hight')
+table.heading('weight', text = 'Weight')
+table.heading('bmi', text = 'BMI')
+table.pack(fill = 'x', expand = False)
+
+table.column("date", width=120, anchor=tk.CENTER)
+table.column("height", width=120, anchor=tk.CENTER)
+table.column("weight", width=120, anchor=tk.CENTER)
+table.column("bmi", width=120, anchor=tk.CENTER)
 
 
 root.mainloop()

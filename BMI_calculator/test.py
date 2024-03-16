@@ -1,34 +1,37 @@
-def BMI_size():
-    h=float(Height.get())
-    w=float(Weight.get())
-    if  (h>0 and w>0):
-        m=h/100
-        bmi=round(float(w/m**2),2)
-        label1.config(text=bmi)
-        
-        font_params = ("Arial", 40, "bold")
+import tkinter as tk
+from tkinter import ttk
 
-    # Create a Font object
-        label_font = font.Font(family=font_params[0], size=font_params[1], weight=font_params[2])
-        text_size_pixels = label_font.measure(str(bmi))
-        global lable1_size
-        lable1_size=int(text_size_pixels/2)
-        print(lable1_size)
-        
-        label1.place(x=180-lable1_size,y=200)
-        
-        if bmi<=18.5:
-            label2.config(text="Underweight")
-            label3.config(text="You have lower weight then normal body!")
-            
-        elif bmi>18.5 and  bmi<=24.9:
-            label2.config(text="Normal")
-            label3.config(text="It indicates that you are healthy!")
-            
-        elif bmi>24.9 and bmi<=29.9:
-            label2.config(text="Overweight")
-            label3.config(text="It indicates that a person is \n slight overweight!\n A doctor may advice to lose some \n weight for health reasons!")
-            
-        else:
-            label2.config(text="Obes!")
-            label3.config(text="Health may be at risk, if they do not \n lose weight!")
+root = tk.Tk()
+
+year_combobox = ttk.Combobox(root, values=["2023", "2024"], state="readonly")
+year_combobox.pack()
+
+month1_combobox = None  # Define month1_combobox in the global scope
+
+def on_Year_change(event=None):
+    global month1_combobox
+    
+    selected_year = year_combobox.get()
+    if selected_year == "2023" or selected_year == "2024":
+        if month1_combobox is None:
+            data_label = tk.Label(root, bg='white', text=", ")
+            data_label.place(x=870, y=450)
+            month1_options = ["All Months", 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+            month1_combobox = ttk.Combobox(root, values=month1_options, style='NoBorder.TCombobox', state="readonly")
+            month1_combobox.set("Months")
+            month1_combobox.place(x=880, y=450)
+            # Bind the combobox change event
+            month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
+    else:
+        print("Hello")
+        if month1_combobox is not None:
+            month1_combobox.destroy()
+            month1_combobox = None
+
+def on_month1_change(event=None):
+    selected_month = month1_combobox.get()
+    print("Selected Month:", selected_month)
+
+year_combobox.bind("<<ComboboxSelected>>", on_Year_change)
+
+root.mainloop()

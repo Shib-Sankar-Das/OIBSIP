@@ -30,7 +30,7 @@ img = PhotoImage(file="BMI_calculator\Resources\h1 (2).png")
 Label(root,  image=img, bg='white').place(x=60, y=10)
 
 frame=Frame(root, width = 350, height = 550, bg = "white",)
-frame.place(x=480,y=40)
+frame.place(x=480,y=10)
 
 heading=Label(frame, text="Sign up", fg='#57a1f8', bg='white', font=("Microsoft YaHei UI Light", 26, 'bold'))
 heading.place(x=100, y=10)
@@ -86,6 +86,25 @@ cal.place(x=200,y=130)
 
 ######------------------------------------------------
 
+
+def on_enter_email(e):
+    email.delete(0, 'end')
+    
+def on_leave_email(e):
+    name=email.get()
+    if name=='':
+        email.insert(0, "Email")
+
+email = Entry(frame,width=25,fg='black',border=0,bg="white",font=("Microsoft YaHei UI Light", 11))
+email.place(x=30,y=190)
+email.insert(0, "Email")
+email.bind('<FocusIn>', on_enter_email)
+email.bind('<FocusOut>', on_leave_email)
+
+Frame(frame,width=295,height=2,bg='black').place(x=25,y=217)
+
+######------------------------------------------------
+
 is_password = False
 
 def on_enter_(e):
@@ -106,7 +125,7 @@ def on_leave_(e):
     is_password=False
     
 code = Entry(frame,width=25,fg='black',border=0,bg="white",font=("Microsoft YaHei UI Light", 11),show='')
-code.place(x=30,y=190)
+code.place(x=30,y=260)
 code.insert(0, "Password")
 code.bind('<FocusIn>', on_enter_)
 code.bind('<FocusOut>', on_leave_)
@@ -127,11 +146,11 @@ show_p=PhotoImage(file="BMI_calculator\Resources\show_small.png")
 hide_p=PhotoImage(file="BMI_calculator\Resources\hide_small.png")
 show_hide_btn=Button(frame,image=show_p,bg="white",border=0,command=show_hide)
 is_showing = True  
-show_hide_btn.place(x=280,y=190)
+show_hide_btn.place(x=280,y=260)
 
 
 
-Frame(frame,width=295,height=2,bg='black').place(x=25,y=217)
+Frame(frame,width=295,height=2,bg='black').place(x=25,y=287)
 
 ######------------------------------------------------
 
@@ -155,7 +174,7 @@ def on_leave_1(e):
     is_password1=False
     
 code1 = Entry(frame,width=25,fg='black',border=0,bg="white",font=("Microsoft YaHei UI Light", 11),show='')
-code1.place(x=30,y=260)
+code1.place(x=30,y=330)
 code1.insert(0, "Confirm Password")
 code1.bind('<FocusIn>', on_enter_1)
 code1.bind('<FocusOut>', on_leave_1)
@@ -176,17 +195,17 @@ show_p1=PhotoImage(file="BMI_calculator\Resources\show_small.png")
 hide_p1=PhotoImage(file="BMI_calculator\Resources\hide_small.png")
 show_hide_btn1=Button(frame,image=show_p1,bg="white",border=0,command=show_hide1)
 is_showing1 = True  
-show_hide_btn1.place(x=280,y=260)
+show_hide_btn1.place(x=280,y=330)
 
 
 
-Frame(frame,width=295,height=2,bg='black').place(x=25,y=287)
+Frame(frame,width=295,height=2,bg='black').place(x=25,y=357)
 
 ##############################################################
 
-Button(frame, width=39, pady=7, text='Sign up',bg='#57a1f8',fg='white',border=0, command=signup).place(x=35,y=310)
+Button(frame, width=39, pady=7, text='Sign up',bg='#57a1f8',fg='white',border=0, command=signup).place(x=35,y=380)
 lable=Label(frame,text="Already have an account?",fg='black',bg='white',font=("Microsoft YaHei UI Light", 9))
-lable.place(x=75,y=360)
+lable.place(x=75,y=430)
 
 def sign_in():
     root.withdraw()
@@ -194,6 +213,6 @@ def sign_in():
     root.destroy()
 
 sign_up=Button(frame, width=6, text='sign in', border=0, bg='white', cursor='hand2', fg='#57a1f8', command=sign_in)
-sign_up.place(x=215,y=360)
+sign_up.place(x=215,y=430)
 
 root.mainloop()
