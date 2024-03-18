@@ -5,13 +5,54 @@ from PIL import  ImageTk, Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from data import sales_year_data
-import os
+import os, data
+from datetime import datetime
+
+
+my_user=data.read_csv()
+my_user_data=my_user[0]
+#print(my_user_data)
+data.delete_file()
+
+email_str=my_user_data[1]
+#print(email_str)
+total_data=data.select_bmi_data(email_str)
+#print(total_data)
+
+
+def separate_data_by_year(data):
+    year_data = {}
+    for email, date, height, weight, bmi in data:
+        year = date[:4]  # Extract year from the date
+        if year not in year_data:
+            year_data[year] = []
+        year_data[year].append((date, height, weight, bmi))
+
+    unique_years = sorted(year_data.keys())
+    return year_data, unique_years
+
+
+year_data, unique_years = separate_data_by_year(total_data)
+#print("Unique years in the data:", unique_years)
+#for year in unique_years:
+#    print(f"Data for year {year}:")
+#    for item in year_data[year]:
+#        print(item)
+#    print()
+#print(year_data)
+
+
+year_data_combobox=[]
+year_data_combobox=unique_years
+year_data_combobox.insert(0, "All Time")
+
 
 root=Tk()
 root.title("BMI Calculator")
 root.geometry("1200x650+75+25")
 root.resizable(False, False)
 root.configure(bg="white")
+
 
 
 
@@ -39,7 +80,12 @@ def BMI():
         label3.config(text="Health may be at risk, if they do not \n lose weight!")
         
     
-
+def calculate_age(birth_date_str):
+    birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
+    today = datetime.today()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    return age
+    
 
 #icon
 image_icon=PhotoImage(file="BMI_calculator\Resources\icon.png")
@@ -53,7 +99,7 @@ top_image.place(x=425,y=10)
 frame=Frame(root, width = 510, height = 550)
 frame.place(x=50,y=70)
 
-frame1=Frame(root, width = 650, height = 400, bg="red")
+frame1=Frame(root, width = 650, height = 400, bg="white")
 frame1.place(x=560,y=50)
 
 label_frame = tk.LabelFrame(root, text="BMI Data",width=500, height=100)
@@ -70,7 +116,7 @@ def on_Year_change(event=None):
     global data_label
     
     selected_year = year_combobox.get()
-    if selected_year == "2023" or selected_year == "2024":
+    if selected_year != "All Time":
         if month1_combobox is None:
             data_label = tk.Label(root, bg='white', text=", ")
             data_label.place(x=870, y=450)
@@ -79,8 +125,14 @@ def on_Year_change(event=None):
             month1_combobox.set("Months")
             month1_combobox.place(x=880, y=450)
             # Bind the combobox change event
+            table.delete(*table.get_children())
+            table_data_insert(selected_year)
+            print("hi")
             month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
     else:
+        table.delete(*table.get_children())
+        print("hello")
+        table_data_insert(selected_year)
         if month1_combobox is not None:
             month1_combobox.destroy()
             data_label.destroy()
@@ -98,7 +150,7 @@ def logout():
     root.destroy()        
     
 
-year_options = ["All Time", "2023", "2024"]
+year_options = year_data_combobox
 year_combobox = ttk.Combobox(root, values=year_options, style='NoBorder.TCombobox', state="readonly")
 year_combobox.set("Year")
 #year_combobox.pack(pady=10)
@@ -130,7 +182,10 @@ def slider_changed(event):
     size=int(float(get_current_value()))
     size_H=int(size*1.25)
     size_W=int(size*0.15)
-    img=(Image.open("BMI_calculator\Resources\man.png"))
+    if my_user_data[2]=='Male':
+        img=(Image.open("BMI_calculator\Resources\man.png"))
+    else:
+        img=(Image.open("BMI_calculator\Resources\women.png"))
     resized_image=img.resize((50+size_W,10+size_H))
     photo2=ImageTk.PhotoImage(resized_image)
     secondimage.config(image=photo2)
@@ -189,28 +244,31 @@ label2.place(x=280,y=400)
 label3=Label(frame, font="arial 10 bold", bg="lightblue", fg="#000", justify='center')
 label3.place(x=200,y=450)
 
+def  show_graphic():
+    plt.rcParams["axes.prop_cycle"] = plt.cycler(
+        color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
 
-plt.rcParams["axes.prop_cycle"] = plt.cycler(
-    color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
+    fig4, ax4 = plt.subplots()
+    ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()), label="BMI", marker="o", markerfacecolor="green")
+    ax4.set_title("Sales by Year", fontsize=20)
+    ax4.set_xlabel("Year", fontsize=10)
+    ax4.tick_params(axis='both', which='major', labelsize=5)
+    ax4.set_ylabel("Sales",fontsize=10)
+    for year, sales in sales_year_data.items():
+        #ax4.text(year, sales, str(sales), ha='center', va='bottom', fontsize=10)
+        ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
+    ax4.legend()
+    #plt.show()
 
-fig4, ax4 = plt.subplots()
-ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()), label="BMI", marker="o", markerfacecolor="green")
-ax4.set_title("Sales by Year", fontsize=20)
-ax4.set_xlabel("Year", fontsize=10)
-ax4.tick_params(axis='both', which='major', labelsize=5)
-ax4.set_ylabel("Sales",fontsize=10)
-for year, sales in sales_year_data.items():
-    #ax4.text(year, sales, str(sales), ha='center', va='bottom', fontsize=10)
-    ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
-ax4.legend()
-#plt.show()
+    canvas4 = FigureCanvasTkAgg(fig4, frame1)
+    canvas4.draw()
+    #canvas4.get_tk_widget().pack(side="left", fill="none", expand=False)
+    #canvas4.get_tk_widget().pack(side="left", fill="both", expand=True, padx=5, pady=5, width=300, height=200)
+    canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
+    canvas4.get_tk_widget().pack()
+show_graphic()
 
-canvas4 = FigureCanvasTkAgg(fig4, frame1)
-canvas4.draw()
-#canvas4.get_tk_widget().pack(side="left", fill="none", expand=False)
-#canvas4.get_tk_widget().pack(side="left", fill="both", expand=True, padx=5, pady=5, width=300, height=200)
-canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
-canvas4.get_tk_widget().pack()
+
 
 table = ttk.Treeview(label_frame, columns = ('date', 'height', 'weight','bmi'), show = 'headings', height=5)
 table.heading('date', text = 'Date')
@@ -224,9 +282,33 @@ table.column("height", width=120, anchor=tk.CENTER)
 table.column("weight", width=120, anchor=tk.CENTER)
 table.column("bmi", width=120, anchor=tk.CENTER)
 
+#scrollbar = tk.Scrollbar(label_frame, orient="vertical", command=table.yview)
+#scrollbar.pack(side="right", fill="y")  # Adjusted side to 'right'
+#table.config(yscrollcommand=scrollbar.set)
+def table_data_insert(insert_data_year):
+    if  insert_data_year == "All Time":
+        for row in sorted(total_data):
+            row=list(row)
+            date=row[1]
+            h=row[2]
+            w=row[3]
+            b=row[4]
+            table_data=tuple([date,h,w,b])
+            table.insert('', 'end', values=table_data)
+    else:
+        for key, value in year_data.items():
+            if key == insert_data_year:
+                for i in value:
+                    table.insert('', 'end', values=i)            
+
 Button(root, width=10, pady=7, text='Log out',bg='#57a1f8',fg='white',border=0, command=logout).place(x=1100,y=20)
 
-label_name=Label(root, font="arial 20 bold", bg="white", fg="#000", justify='center', text="Name")
-label_name.place(x=20,y=20)
+label_name=Label(root, font="arial 20 bold", bg="white", fg="#000", justify='center', text=my_user_data[0])
+label_name.place(x=20,y=0)
+
+age=str(calculate_age(my_user_data[3]))
+
+label_age=Label(root, font="arial 15 bold", bg="white", fg="#000", justify='center', text="Age:"+age)
+label_age.place(x=20,y=30)
 
 root.mainloop()

@@ -1,2 +1,4 @@
 .gitignore
 env/
+BMI_calculator\.dist
+BMI_calculator\__pycache__

@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox, ttk
-import os
+import os, re, data
 from tkcalendar import DateEntry
 
 root=Tk()
@@ -13,18 +13,45 @@ root.resizable(False, False)
 image_icon=PhotoImage(file="BMI_calculator\Resources\icon.png")
 root.iconphoto(False,image_icon)
 
+def validate_email(email):
+    # Regular expression pattern for validating email addresses
+    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    # Check if the email matches the pattern
+    if re.match(pattern, email):
+        return True
+    else:
+        return False
+    
 def signup_success():
     root.withdraw()
-    os.system("python main.py")
+    os.system("python BMI_calculator\Sign_In.py")
     root.destroy()
 
 def signup():
     username=user.get()
+    gender=gender_combobox.get()
+    birth_date=cal.get_date()
+    print(birth_date)
+    #DOB=birth_date.strftime("%d/%m/%y")
+    email_id=email.get()
     password=code.get()
+    c_password=code1.get()
     
-    if username == 'admin' and password == '1234' :
-        print("Hi")
-        signin_success()
+    if not all([username, gender, birth_date, email_id, password, c_password]):
+        warning1.config(text="Enter All The Fields !!!")
+    else:
+        if validate_email(email_id)==False:
+            warning2.config(text="Enter The Valid Email ID !!!")
+        else:
+            # Check if password and confirm password match
+            if password != c_password:
+                warning3.config(text="Password and Confirm Password do not match!!!")
+                return False
+            else:
+                # All checks passed
+                data.insert_data_login(username, email_id, gender, birth_date, password)
+                signup_success()
+    
 
 img = PhotoImage(file="BMI_calculator\Resources\h1 (2).png")
 Label(root,  image=img, bg='white').place(x=60, y=10)
@@ -39,6 +66,9 @@ heading.place(x=100, y=10)
 
 def on_enter(e):
     user.delete(0, 'end')
+    warning1.config(text= "")
+    warning2.config(text= "")
+    warning3.config(text= "")
     
 def on_leave(e):
     name=user.get()
@@ -54,10 +84,15 @@ user.bind('<FocusOut>', on_leave)
 
 Frame(frame,width=295,height=2,bg='black').place(x=25,y=107)
 
+
+
 ######------------------------------------------------
 
 def on_gender_change(event):
     selected_gender = gender_combobox.get()
+    warning1.config(text= "")
+    warning2.config(text= "")
+    warning3.config(text= "")
 
 
 # Create a style
@@ -81,15 +116,21 @@ gender_combobox.bind("<<ComboboxSelected>>", on_gender_change)
 
 ######------------------------------------------------
 
-cal=DateEntry(frame,selectmode='day',date_pattern="dd/mm/y",state="readonly")
+cal=DateEntry(frame,selectmode='day',date_pattern="dd/mm/yyyy",state="readonly")
 cal._set_text("Birth Date")
 cal.place(x=200,y=130)
+
+warning1=Label(frame, fg='red', bg='white', font=("Microsoft YaHei UI Light", 10))
+warning1.place(x=35, y=160)
 
 ######------------------------------------------------
 
 
 def on_enter_email(e):
     email.delete(0, 'end')
+    warning1.config(text= "")
+    warning2.config(text= "")
+    warning3.config(text= "")
     
 def on_leave_email(e):
     name=email.get()
@@ -104,6 +145,9 @@ email.bind('<FocusOut>', on_leave_email)
 
 Frame(frame,width=295,height=2,bg='black').place(x=25,y=217)
 
+warning2=Label(frame, fg='red', bg='white', font=("Microsoft YaHei UI Light", 10))
+warning2.place(x=35, y=220)
+
 ######------------------------------------------------
 
 is_password = False
@@ -111,6 +155,9 @@ is_password = False
 def on_enter_(e):
     global is_showing
     global is_password
+    warning1.config(text= "")
+    warning2.config(text= "")
+    warning3.config(text= "")
     code.delete(0, 'end')
     is_password=True
     is_showing = False
@@ -130,6 +177,9 @@ code.place(x=30,y=260)
 code.insert(0, "Password")
 code.bind('<FocusIn>', on_enter_)
 code.bind('<FocusOut>', on_leave_)
+
+warning3=Label(frame, fg='red', bg='white', font=("Microsoft YaHei UI Light", 10))
+warning3.place(x=25, y=290)
 
 def show_hide():
     global is_showing
@@ -160,6 +210,9 @@ is_password1 = False
 def on_enter_1(e):
     global is_showing1
     global is_password1
+    warning1.config(text= "")
+    warning2.config(text= "")
+    warning3.config(text= "")
     code1.delete(0, 'end')
     is_password1=True
     is_showing1 = False
