@@ -21,17 +21,18 @@ total_data=data.select_bmi_data(email_str)
 
 
 def separate_data_by_year(data):
-    year_data = {}
-    for email, date, height, weight, bmi in data:
+    year_data1 = {}
+    for email, date, height, weight, bmi, category in data:
         year = date[:4]  # Extract year from the date
-        if year not in year_data:
-            year_data[year] = []
-        year_data[year].append((date, height, weight, bmi))
+        if year not in year_data1:
+            year_data1[year] = []
+        year_data1[year].append((date, height, weight, bmi, category))
 
-    unique_years = sorted(year_data.keys())
-    return year_data, unique_years
+    unique_years1 = sorted(year_data1.keys())
+    return year_data1, unique_years1
 
-
+global year_data
+global unique_years
 year_data, unique_years = separate_data_by_year(total_data)
 #print("Unique years in the data:", unique_years)
 #for year in unique_years:
@@ -41,10 +42,34 @@ year_data, unique_years = separate_data_by_year(total_data)
 #    print()
 #print(year_data)
 
-
+global year_data_combobox
 year_data_combobox=[]
 year_data_combobox=unique_years
 year_data_combobox.insert(0, "All Time")
+
+def  update_data_display():
+    global total_data
+    total_data.clear()
+    total_data=data.select_bmi_data(email_str)
+    year_data.clear()
+    unique_years.clear()
+    year_data, unique_years = separate_data_by_year(total_data)
+    year_data_combobox.clear()
+    year_data_combobox=unique_years
+    year_data_combobox.insert(0, "All Time")
+    
+
+#def  update_graph():
+#    global selected_year
+#    selected_year = combo_box.currentText()
+    #print(selected_year)
+#    graph.clear()
+#    x=getattr(sys.modules['__main__'], 'x'+selected_year)
+#    y=getattr(sys.modules['__main__'], 'y'+selected_year)
+#    graph.plot(x,y,'r')
+#    graph.setTitle('BMI Data Over Years')
+#    graph.replot()
+
 
 
 root=Tk()
@@ -66,18 +91,25 @@ def BMI():
     if bmi<=18.5:
         label2.config(text="Underweight")
         label3.config(text="You have lower weight then normal body!")
+        category="Underweight"
         
     elif bmi>18.5 and  bmi<=24.9:
         label2.config(text="Normal")
         label3.config(text="It indicates that you are healthy!")
+        category="Normal"
         
     elif bmi>24.9 and bmi<=29.9:
         label2.config(text="Overweight")
         label3.config(text="It indicates that a person is \n slight overweight!\n A doctor may advice to lose some \n weight for health reasons!")
+        category="Overweight"
         
     else:
-        label2.config(text="Obes!")
+        label2.config(text="Obesity")
         label3.config(text="Health may be at risk, if they do not \n lose weight!")
+        category="Obesity"
+    update_data(email_str,h,w,bmi,category)
+    update_data_display()
+        
         
     
 def calculate_age(birth_date_str):
@@ -86,6 +118,21 @@ def calculate_age(birth_date_str):
     age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
     return age
     
+def update_data(email,height,weight,bmi,category):
+    today_date=str(datetime.today().date())
+    print(email)
+    print(type(email))
+    print(today_date)
+    print(type(today_date))
+    print(height)
+    print(type(height))
+    print(weight)
+    print(type(weight))
+    print(bmi)
+    print(type(bmi))
+    print(category)
+    print(type(category))
+    data.update_today_data1(email,today_date,height,weight,bmi,category)
 
 #icon
 image_icon=PhotoImage(file="BMI_calculator\Resources\icon.png")
@@ -103,7 +150,7 @@ frame1=Frame(root, width = 650, height = 400, bg="white")
 frame1.place(x=560,y=50)
 
 label_frame = tk.LabelFrame(root, text="BMI Data",width=500, height=100)
-label_frame.place(x=650, y=490)
+label_frame.place(x=600, y=490)
 
 data_label=Label(root, bg='white', text="BMI Data of ")
 data_label.place(x=650,y=450)
@@ -117,6 +164,8 @@ def on_Year_change(event=None):
     
     selected_year = year_combobox.get()
     if selected_year != "All Time":
+        table.delete(*table.get_children())
+        table_data_insert(selected_year)
         if month1_combobox is None:
             data_label = tk.Label(root, bg='white', text=", ")
             data_label.place(x=870, y=450)
@@ -125,8 +174,6 @@ def on_Year_change(event=None):
             month1_combobox.set("Months")
             month1_combobox.place(x=880, y=450)
             # Bind the combobox change event
-            table.delete(*table.get_children())
-            table_data_insert(selected_year)
             print("hi")
             month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
     else:
@@ -270,17 +317,19 @@ show_graphic()
 
 
 
-table = ttk.Treeview(label_frame, columns = ('date', 'height', 'weight','bmi'), show = 'headings', height=5)
+table = ttk.Treeview(label_frame, columns = ('date', 'height', 'weight','bmi','category'), show = 'headings', height=5)
 table.heading('date', text = 'Date')
 table.heading('height', text = 'Height')
 table.heading('weight', text = 'Weight')
 table.heading('bmi', text = 'BMI')
+table.heading('category', text = 'Category')
 table.pack(fill = 'x', expand = False)
 
 table.column("date", width=120, anchor=tk.CENTER)
-table.column("height", width=120, anchor=tk.CENTER)
-table.column("weight", width=120, anchor=tk.CENTER)
-table.column("bmi", width=120, anchor=tk.CENTER)
+table.column("height", width=100, anchor=tk.CENTER)
+table.column("weight", width=100, anchor=tk.CENTER)
+table.column("bmi", width=100, anchor=tk.CENTER)
+table.column("category", width=120, anchor=tk.CENTER)
 
 #scrollbar = tk.Scrollbar(label_frame, orient="vertical", command=table.yview)
 #scrollbar.pack(side="right", fill="y")  # Adjusted side to 'right'
@@ -293,7 +342,8 @@ def table_data_insert(insert_data_year):
             h=row[2]
             w=row[3]
             b=row[4]
-            table_data=tuple([date,h,w,b])
+            c=row[5]
+            table_data=tuple([date,h,w,b,c])
             table.insert('', 'end', values=table_data)
     else:
         for key, value in year_data.items():
