@@ -31,8 +31,6 @@ def separate_data_by_year(data):
     unique_years1 = sorted(year_data1.keys())
     return year_data1, unique_years1
 
-global year_data
-global unique_years
 year_data, unique_years = separate_data_by_year(total_data)
 #print("Unique years in the data:", unique_years)
 #for year in unique_years:
@@ -42,18 +40,22 @@ year_data, unique_years = separate_data_by_year(total_data)
 #    print()
 #print(year_data)
 
-global year_data_combobox
+
 year_data_combobox=[]
 year_data_combobox=unique_years
 year_data_combobox.insert(0, "All Time")
 
 def  update_data_display():
     global total_data
+    global year_data
+    global unique_years
+    global year_data_combobox
     total_data.clear()
     total_data=data.select_bmi_data(email_str)
     year_data.clear()
     unique_years.clear()
     year_data, unique_years = separate_data_by_year(total_data)
+    print(year_data)
     year_data_combobox.clear()
     year_data_combobox=unique_years
     year_data_combobox.insert(0, "All Time")
@@ -120,18 +122,18 @@ def calculate_age(birth_date_str):
     
 def update_data(email,height,weight,bmi,category):
     today_date=str(datetime.today().date())
-    print(email)
-    print(type(email))
-    print(today_date)
-    print(type(today_date))
-    print(height)
-    print(type(height))
-    print(weight)
-    print(type(weight))
-    print(bmi)
-    print(type(bmi))
-    print(category)
-    print(type(category))
+    #print(email)
+    #print(type(email))
+    #print(today_date)
+    #print(type(today_date))
+    #print(height)
+    #print(type(height))
+    #print(weight)
+    #print(type(weight))
+    #print(bmi)
+    #print(type(bmi))
+    #print(category)
+    #print(type(category))
     data.update_today_data1(email,today_date,height,weight,bmi,category)
 
 #icon
