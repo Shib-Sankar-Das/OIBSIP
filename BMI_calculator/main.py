@@ -41,6 +41,35 @@ year_data, unique_years = separate_data_by_year(total_data)
 #print(year_data)
 
 
+def separate_data_by_months(year):
+    month_data1 = {}
+    for month in year_data[year]:
+        date_value = month[0]
+        month_name = get_month_name(date_value)
+        month_data1.setdefault(month_name, []).append(month)
+
+    unique_month = sorted(month_data1.keys())
+    return  unique_month, month_data1
+
+
+
+def get_month_name(date_str):
+    try:
+        # Parse the date string to a datetime object
+        date_object = datetime.strptime(date_str, '%Y-%m-%d')
+        
+        # Extract the month from the datetime object
+        month_number = date_object.month
+        
+        # Get the month name as a string
+        month_name = date_object.strftime('%B')
+        
+        return month_name
+    except ValueError:
+        return "Invalid date format"
+    
+    
+
 year_data_combobox=[]
 year_data_combobox=unique_years
 year_data_combobox.insert(0, "All Time")
@@ -171,10 +200,17 @@ def on_Year_change(event=None):
         if month1_combobox is None:
             data_label = tk.Label(root, bg='white', text=", ")
             data_label.place(x=870, y=450)
-            month1_options = ["All Months", 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-            month1_combobox = ttk.Combobox(root, values=month1_options, style='NoBorder.TCombobox', state="readonly")
+            global month_name
+            global month_value
+            month_names,month_value=separate_data_by_months(selected_year)
+            month_name=sorted(month_names)
+            month_name.insert(0,"All Months")
+            #month1_options = ["All Months", 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+            month1_combobox = ttk.Combobox(root, values=month_name, style='NoBorder.TCombobox', state="readonly")
             month1_combobox.set("Months")
             month1_combobox.place(x=880, y=450)
+            #index=month1_combobox['values'].index(month_name[0]) #selecting the
+            #month1_combobox.current(index)
             # Bind the combobox change event
             print("hi")
             month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
@@ -190,6 +226,14 @@ def on_Year_change(event=None):
 
 def on_month1_change(event=None):
     selected_month = month1_combobox.get()
+    for key in month_value:
+        print(month_value)
+        print(month_value[key])
+        month_value[key]=sorted(month_value[key])
+    #if  selected_month!="All Months" :
+    table.delete(*table.get_children())
+    print("hello1")
+    table_data_insert_month(selected_month)
     print("Selected Month:", selected_month)
         
 
@@ -352,6 +396,22 @@ def table_data_insert(insert_data_year):
             if key == insert_data_year:
                 for i in value:
                     table.insert('', 'end', values=i)            
+
+
+
+def table_data_insert_month(insert_data_month):
+    if  insert_data_month == "All Months":
+        for key,value in month_value.items():
+            for i in  value:
+                table.insert('', 'end', values=i)
+    else:
+        for key, value in month_value.items():
+            if key == insert_data_month:
+                for i in value:
+                    table.insert('', 'end', values=i)     
+
+
+
 
 Button(root, width=10, pady=7, text='Log out',bg='#57a1f8',fg='white',border=0, command=logout).place(x=1100,y=20)
 
