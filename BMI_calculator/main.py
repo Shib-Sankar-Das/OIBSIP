@@ -88,6 +88,43 @@ def  update_data_display():
     year_data_combobox.clear()
     year_data_combobox=unique_years
     year_data_combobox.insert(0, "All Time")
+
+
+month_name=[]
+month_names = []
+month_value = []
+
+def month_data_display(selected_year):
+    global month_name
+    global month_value
+    global month_names
+    try:
+        global month1_combobox
+        global data_label
+        
+        if month1_combobox:
+            month1_combobox.destroy()
+        if data_label:
+            data_label.destroy()
+        
+        month1_combobox = None
+        data_label = None
+        month_name.clear()
+        month_names.clear()
+        month_value.clear()
+        month_names, month_value = separate_data_by_months(selected_year)
+        month_name = sorted(month_names)
+        month_name.insert(0, "All Months")
+        print("try")
+    except Exception as e:
+        month_name.clear()
+        month_names.clear()
+        month_value.clear()
+        month_names, month_value = separate_data_by_months(selected_year)
+        month_name = sorted(month_names)
+        month_name.insert(0, "All Months")
+        print("catch :"+ str(e))
+
     
 
 #def  update_graph():
@@ -197,14 +234,10 @@ def on_Year_change(event=None):
     if selected_year != "All Time":
         table.delete(*table.get_children())
         table_data_insert(selected_year)
+        month_data_display(selected_year)
         if month1_combobox is None:
             data_label = tk.Label(root, bg='white', text=", ")
             data_label.place(x=870, y=450)
-            global month_name
-            global month_value
-            month_names,month_value=separate_data_by_months(selected_year)
-            month_name=sorted(month_names)
-            month_name.insert(0,"All Months")
             #month1_options = ["All Months", 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             month1_combobox = ttk.Combobox(root, values=month_name, style='NoBorder.TCombobox', state="readonly")
             month1_combobox.set("Months")
