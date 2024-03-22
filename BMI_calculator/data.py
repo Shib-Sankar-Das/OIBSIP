@@ -1,6 +1,11 @@
 import mysql.connector as MyConn
 import csv, os
-mydb=MyConn.connect(host="localhost", user="root", password="S_S_Dragon@721", database="bmi_calculator")
+from dotenv import load_dotenv
+
+load_dotenv()
+database_Password= os.environ.get("Password")
+
+mydb=MyConn.connect(host="localhost", user="root", password=database_Password, database="bmi_calculator")
 db_cursor=mydb.cursor()
 data = []
 data1=[]

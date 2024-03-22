@@ -51,3 +51,16 @@ def get_month_name(date_str):
 date_str = '2004-5-18'
 month_name = get_month_name(date_str)
 print("Month Name:", month_name)
+
+
+
+
+
+# Dictionary with keys as numerical integers in string format
+integer_string_dict = {'5': 'apple', '3': 'banana', '10': 'orange', '1': 'grape'}
+
+# Sorting the dictionary by keys and updating the original dictionary
+integer_string_dict.clear()  # Clearing the original dictionary
+integer_string_dict.update({k: integer_string_dict[k] for k in sorted(sorted_dict.keys(), key=lambda x: int(x))})
+
+print("Sorted dictionary stored in the same dictionary:", integer_string_dict)

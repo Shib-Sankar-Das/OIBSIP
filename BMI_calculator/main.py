@@ -5,7 +5,7 @@ from PIL import  ImageTk, Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from data import sales_year_data
-import os, data
+import os, data, calendar
 from datetime import datetime
 
 
@@ -42,15 +42,117 @@ year_data, unique_years = separate_data_by_year(total_data)
 
 
 def separate_data_by_months(year):
-    month_data1 = {}
-    for month in year_data[year]:
-        date_value = month[0]
-        month_name = get_month_name(date_value)
-        month_data1.setdefault(month_name, []).append(month)
+    if year != "All Time":
+        month_data1 = {}
+        for month in year_data[year]:
+            date_value = month[0]
+            month_name = get_month_name(date_value)
+            month_data1.setdefault(month_name, []).append(month)
 
-    unique_month = sorted(month_data1.keys())
-    return  unique_month, month_data1
+        unique_month = sorted(month_data1.keys())
+        #print(month_data1)
+        return  unique_month, month_data1
+    else:
+        return None,None
 
+
+
+
+year_graph_data={}
+sorted_year_graph_data={}
+
+def year_data_avg(selected):
+    global year_graph_data
+    global sorted_year_graph_data
+    try:
+        year_graph_data.clear()
+        sorted_year_graph_data.clear()
+        if  selected == "All Time":
+            for key, value in year_data.items():
+                #j=0
+                avg=0
+                for i in value:
+                    #j+=1
+                    avg=avg+i[3]
+                avg=round(avg/len(value),2)
+                year_graph_data[key]=avg
+            print(year_graph_data)
+            sorted_year_graph_data = {k: year_graph_data[k] for k in sorted(year_graph_data, key=lambda x: int(x))}
+            print(sorted_year_graph_data)
+            
+            
+        else:
+            for key, value in month_value_graph.items():
+                #j=0
+                avg=0
+                for i in value:
+                    #j+=1
+                    avg=avg+i[3]
+                avg=round(avg/len(value),2)
+                year_graph_data[key]=avg
+            print(year_graph_data)
+            sorted_year_graph_data = {month_name: year_graph_data[month_name] for month_name in sorted(year_graph_data, key=lambda x: list(calendar.month_name).index(x))}
+            print(sorted_year_graph_data)
+            
+    except  Exception as e:
+        print(e)
+        if  selected == "All Time":
+            for key, value in year_data.items():
+                #j=0
+                avg=0
+                for i in value:
+                    #j+=1
+                    avg=avg+i[3]
+                avg=round(avg/len(value),2)
+                year_graph_data[key]=avg
+            print(year_graph_data)
+            sorted_year_graph_data = {k: year_graph_data[k] for k in sorted(year_graph_data, key=lambda x: int(x))}
+            print(sorted_year_graph_data)
+            
+        else:
+            for key, value in month_value_graph.items():
+                #j=0
+                avg=0
+                for i in value:
+                    #j+=1
+                    avg=avg+i[3]
+                avg=round(avg/len(value),2)
+                year_graph_data[key]=avg
+            print(year_graph_data)
+            sorted_year_graph_data = {month_name: year_graph_data[month_name] for month_name in sorted(year_graph_data, key=lambda x: list(calendar.month_name).index(x))}
+            print(sorted_year_graph_data)
+        
+def month_data_graph(selected):
+    global sorted_year_graph_data
+    if  selected != 'All Months':
+        year_graph_data.clear()
+        sorted_year_graph_data.clear()
+        for key, value in month_value_graph.items(): 
+            if key==selected :
+                for i in value:
+                    day=get_day(i[0])
+                    year_graph_data[day]=i[3]
+                
+        print(year_graph_data)
+        sorted_year_graph_data = {k: year_graph_data[k] for k in sorted(year_graph_data, key=lambda x: int(x))}
+        print(sorted_year_graph_data)
+    else:
+        print(sorted_year_graph_data)
+ 
+ 
+ 
+        
+def get_day(date_str):
+    try:
+        # Parse the date string to a datetime object
+        date_object = datetime.strptime(date_str, '%Y-%m-%d')
+        
+        # Extract the day from the datetime object
+        day = date_object.day
+        
+        return day
+    except ValueError:
+        return "Invalid date format"
 
 
 def get_month_name(date_str):
@@ -92,7 +194,7 @@ def  update_data_display():
 
 month_name=[]
 month_names = []
-month_value = []
+month_value = {}
 
 def month_data_display(selected_year):
     global month_name
@@ -225,16 +327,25 @@ data_label.place(x=650,y=450)
 
 month1_combobox = None 
 data_label = None
+month_value_graph = None
+
 
 def on_Year_change(event=None):
     global month1_combobox
     global data_label
+    global month_value_graph
+    
     
     selected_year = year_combobox.get()
+    x,month_value_graph=separate_data_by_months(selected_year)
+    year_data_avg(selected_year)
+    show_graphic()
+    
     if selected_year != "All Time":
         table.delete(*table.get_children())
         table_data_insert(selected_year)
         month_data_display(selected_year)
+        
         if month1_combobox is None:
             data_label = tk.Label(root, bg='white', text=", ")
             data_label.place(x=870, y=450)
@@ -259,13 +370,15 @@ def on_Year_change(event=None):
 
 def on_month1_change(event=None):
     selected_month = month1_combobox.get()
+    month_data_graph(selected_month)
     for key in month_value:
-        print(month_value)
+        #print(month_value)
         print(month_value[key])
         month_value[key]=sorted(month_value[key])
     #if  selected_month!="All Months" :
     table.delete(*table.get_children())
     print("hello1")
+    print(month_value)
     table_data_insert_month(selected_month)
     print("Selected Month:", selected_month)
         
@@ -370,17 +483,17 @@ label2.place(x=280,y=400)
 label3=Label(frame, font="arial 10 bold", bg="lightblue", fg="#000", justify='center')
 label3.place(x=200,y=450)
 
-def  show_graphic():
+def show_graphic():
     plt.rcParams["axes.prop_cycle"] = plt.cycler(
         color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
 
     fig4, ax4 = plt.subplots()
-    ax4.plot(list(sales_year_data.keys()), list(sales_year_data.values()), label="BMI", marker="o", markerfacecolor="green")
+    ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
     ax4.set_title("Sales by Year", fontsize=20)
     ax4.set_xlabel("Year", fontsize=10)
     ax4.tick_params(axis='both', which='major', labelsize=5)
     ax4.set_ylabel("Sales",fontsize=10)
-    for year, sales in sales_year_data.items():
+    for year, sales in sorted_year_graph_data.items():
         #ax4.text(year, sales, str(sales), ha='center', va='bottom', fontsize=10)
         ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
     ax4.legend()
@@ -392,7 +505,7 @@ def  show_graphic():
     #canvas4.get_tk_widget().pack(side="left", fill="both", expand=True, padx=5, pady=5, width=300, height=200)
     canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
     canvas4.get_tk_widget().pack()
-show_graphic()
+
 
 
 

@@ -2,3 +2,7 @@
 env/
 BMI_calculator/.dist
 BMI_calculator/__pycache__
+BMI_calculator/.env
+BMI_calculator/test.py
+BMI_calculator/test 1.py
+BMI_calculator/test 2.py
