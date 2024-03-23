@@ -124,19 +124,21 @@ def year_data_avg(selected):
         
 def month_data_graph(selected):
     global sorted_year_graph_data
+    global selected_year
     if  selected != 'All Months':
         year_graph_data.clear()
         sorted_year_graph_data.clear()
         for key, value in month_value_graph.items(): 
             if key==selected :
                 for i in value:
-                    day=get_day(i[0])
+                    day=str(get_day(i[0]))
                     year_graph_data[day]=i[3]
                 
         print(year_graph_data)
         sorted_year_graph_data = {k: year_graph_data[k] for k in sorted(year_graph_data, key=lambda x: int(x))}
         print(sorted_year_graph_data)
     else:
+        year_data_avg(selected_year)
         print(sorted_year_graph_data)
  
  
@@ -328,20 +330,27 @@ data_label.place(x=650,y=450)
 month1_combobox = None 
 data_label = None
 month_value_graph = None
-
+selected_year = None
+month_title=None
 
 def on_Year_change(event=None):
     global month1_combobox
     global data_label
     global month_value_graph
-    
+    global g_title
+    global g_xaxis
+    global selected_year
+    global month_title
     
     selected_year = year_combobox.get()
+    g_title=str(selected_year)
     x,month_value_graph=separate_data_by_months(selected_year)
     year_data_avg(selected_year)
-    show_graphic()
+    
     
     if selected_year != "All Time":
+        g_xaxis="Months"
+        show_graphic()
         table.delete(*table.get_children())
         table_data_insert(selected_year)
         month_data_display(selected_year)
@@ -357,8 +366,11 @@ def on_Year_change(event=None):
             #month1_combobox.current(index)
             # Bind the combobox change event
             print("hi")
+            month_title=str(selected_year)
             month1_combobox.bind("<<ComboboxSelected>>", on_month1_change)
     else:
+        g_xaxis="Years"
+        show_graphic()
         table.delete(*table.get_children())
         print("hello")
         table_data_insert(selected_year)
@@ -369,7 +381,19 @@ def on_Year_change(event=None):
             data_label=None
 
 def on_month1_change(event=None):
+    global g_title
+    global g_xaxis
+    global month_title
+    t=month_title
     selected_month = month1_combobox.get()
+    m=selected_month
+    if selected_month != "All Months":
+        #g_title=str(selected_month) + ", "+ g_title
+        g_xaxis="Days"
+    else:
+        #g_title=str(selected_month) + ", "+ g_title
+        g_xaxis="Months"
+    g_title=m + ", "+ t
     month_data_graph(selected_month)
     for key in month_value:
         #print(month_value)
@@ -485,10 +509,11 @@ label3=Label(frame, font="arial 10 bold", bg="lightblue", fg="#000", justify='ce
 label3.place(x=200,y=450)
 
 
-
-
+g_title=None
+g_xaxis=None
 fig4, ax4 = plt.subplots()
 canvas4 = None
+
 def show_graphic():
     plt.rcParams["axes.prop_cycle"] = plt.cycler(
         color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
@@ -496,6 +521,8 @@ def show_graphic():
     global ax4
     global canvas4
     global frame1
+    global g_title
+    global g_xaxis
     try:
         ax4.clear()
         plt.close(fig4)
@@ -506,10 +533,10 @@ def show_graphic():
 
     
         ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
-        ax4.set_title("Sales by Year", fontsize=20)
-        ax4.set_xlabel("Year", fontsize=10)
+        ax4.set_title("BMI Data Of "+g_title, fontsize=20)
+        ax4.set_xlabel(g_xaxis, fontsize=10)
         ax4.tick_params(axis='both', which='major', labelsize=5)
-        ax4.set_ylabel("Sales",fontsize=10)
+        ax4.set_ylabel("Body Mass Index",fontsize=10)
         for year, sales in sorted_year_graph_data.items():
             ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
         ax4.legend()
@@ -522,10 +549,10 @@ def show_graphic():
     except  Exception as e:
         
         ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
-        ax4.set_title("Sales by Year", fontsize=20)
-        ax4.set_xlabel("Year", fontsize=10)
+        ax4.set_title("BMI Data Of "+g_title, fontsize=20)
+        ax4.set_xlabel(g_xaxis, fontsize=10)
         ax4.tick_params(axis='both', which='major', labelsize=5)
-        ax4.set_ylabel("Sales",fontsize=10)
+        ax4.set_ylabel("Body Mass Index",fontsize=10)
         for year, sales in sorted_year_graph_data.items():
             ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
         ax4.legend()
