@@ -381,6 +381,7 @@ def on_month1_change(event=None):
     print(month_value)
     table_data_insert_month(selected_month)
     print("Selected Month:", selected_month)
+    show_graphic()
         
 
 def logout():
