@@ -31,8 +31,7 @@ def signup():
     username=user.get()
     gender=gender_combobox.get()
     birth_date=cal.get_date()
-    print(birth_date)
-    #DOB=birth_date.strftime("%d/%m/%y")
+
     email_id=email.get()
     password=code.get()
     c_password=code1.get()

@@ -17,7 +17,6 @@ def insert_data_login(username,email, gender, Birth_date,password):
     insert_value = (username, email, gender, Birth_date, password)
     db_cursor.execute(insert_query,insert_value)
     mydb.commit()
-    print("Data Inserted Successfully!")
 
 
 def insert_bmi_data(email, date, height, weight, bmi, category):
@@ -33,10 +32,8 @@ def select_login(email, password):
     try:
         query = "SELECT * FROM login_data WHERE Email=%s AND Password=%s"
         db_cursor.execute(query, (email, password))
-        #data = []
         for db_data in db_cursor.fetchall():
             data.append(db_data) 
-        print(data)
         userData=data
         return data
     except Exception as e:
@@ -91,9 +88,6 @@ def update_today_data1(email, date, height, weight, bmi, category):
 #print("Data Base Created")
 def create_csv(data):
     file_path='BMI_calculator/Resources/temp.csv'
-    # Combine folder path and filename to get full file path
-    #file_path = folder_path + '/' + filename
-    # Write data to CSV file
     with open(file_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in data:
@@ -121,27 +115,5 @@ def delete_file():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-#delete_file()
 
-
-sales_year_data = {
-    "A": 5000,
-    "B": 17500,
-    "C": 10000,
-    "D": 7500,
-    "E": 15000,
-    "F": 10000,
-    "G": 4000,
-    "H": 3000,
-    "I": 2000,
-    "J": 5000
-}
-
-product_data = {
-    "A": 10,
-    "B": 40,
-    "C": 30,
-    "D": 20,
-    "E": 50
-}
 

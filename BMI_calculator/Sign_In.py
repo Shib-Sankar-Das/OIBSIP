@@ -23,7 +23,6 @@ def signin():
     password=code.get()
     login_data=data.select_login(email, password)
     if login_data:
-        print(login_data)
         data.create_csv(login_data) #creating csv
         signin_success()
     else:
