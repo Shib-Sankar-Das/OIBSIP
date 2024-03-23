@@ -483,28 +483,57 @@ label2.place(x=280,y=400)
 label3=Label(frame, font="arial 10 bold", bg="lightblue", fg="#000", justify='center')
 label3.place(x=200,y=450)
 
+
+
+
+fig4, ax4 = plt.subplots()
+canvas4 = None
 def show_graphic():
     plt.rcParams["axes.prop_cycle"] = plt.cycler(
         color=["#4C2A85", "#BE96FF", "#957DAD", "#5E366E", "#A98CCC"])
+    global fig4
+    global ax4
+    global canvas4
+    global frame1
+    try:
+        ax4.clear()
+        plt.close(fig4)
+        canvas4.get_tk_widget().delete("all")
+        for widget in frame1.winfo_children():
+            widget.destroy()
+        print("Graph cleared.")
 
-    fig4, ax4 = plt.subplots()
-    ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
-    ax4.set_title("Sales by Year", fontsize=20)
-    ax4.set_xlabel("Year", fontsize=10)
-    ax4.tick_params(axis='both', which='major', labelsize=5)
-    ax4.set_ylabel("Sales",fontsize=10)
-    for year, sales in sorted_year_graph_data.items():
-        #ax4.text(year, sales, str(sales), ha='center', va='bottom', fontsize=10)
-        ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
-    ax4.legend()
-    #plt.show()
+    
+        ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
+        ax4.set_title("Sales by Year", fontsize=20)
+        ax4.set_xlabel("Year", fontsize=10)
+        ax4.tick_params(axis='both', which='major', labelsize=5)
+        ax4.set_ylabel("Sales",fontsize=10)
+        for year, sales in sorted_year_graph_data.items():
+            ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
+        ax4.legend()
 
-    canvas4 = FigureCanvasTkAgg(fig4, frame1)
-    canvas4.draw()
-    #canvas4.get_tk_widget().pack(side="left", fill="none", expand=False)
-    #canvas4.get_tk_widget().pack(side="left", fill="both", expand=True, padx=5, pady=5, width=300, height=200)
-    canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
-    canvas4.get_tk_widget().pack()
+        canvas4 = FigureCanvasTkAgg(fig4, frame1)
+        canvas4.draw()
+        canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
+        canvas4.get_tk_widget().pack()
+
+    except  Exception as e:
+        
+        ax4.plot(list(sorted_year_graph_data.keys()), list(sorted_year_graph_data.values()), label="BMI", marker="o", markerfacecolor="green")
+        ax4.set_title("Sales by Year", fontsize=20)
+        ax4.set_xlabel("Year", fontsize=10)
+        ax4.tick_params(axis='both', which='major', labelsize=5)
+        ax4.set_ylabel("Sales",fontsize=10)
+        for year, sales in sorted_year_graph_data.items():
+            ax4.annotate(str(sales), xy=(year, sales), xytext=(5, 5), textcoords='offset points', fontsize=7)
+        ax4.legend()
+
+        canvas4 = FigureCanvasTkAgg(fig4, frame1)
+        canvas4.draw()
+        canvas4.get_tk_widget().config(width=frame1['width'], height=frame1['height'])
+        canvas4.get_tk_widget().pack()
+
 
 
 
